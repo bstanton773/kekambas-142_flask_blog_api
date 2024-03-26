@@ -6,3 +6,6 @@ __pycache__/
 
 # Ignore the .env file because that contains environment secrets
 .env
+
+# Ignore any sqlite files
+*.db
