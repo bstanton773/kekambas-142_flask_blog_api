@@ -135,6 +135,23 @@ def edit_post(post_id):
     post.update(**data)
     return post.to_dict()
 
+# Delete Post Endpoint
+@app.route('/posts/<int:post_id>', methods=['DELETE'])
+@token_auth.login_required
+def delete_post(post_id):
+    # Let's the find post in the db
+    post = db.session.get(Post, post_id)
+    if post is None:
+        return {'error': f"Post with ID #{post_id} does not exist"}, 404
+    # Get the current user based on the token
+    current_user = token_auth.current_user()
+    # Check if the current user is the author of the post
+    if current_user is not post.author:
+        return {'error': "This is not your post. You do not have permission to delete"}, 403
+    # Pass that data into the post's update method
+    post.delete()
+    return {'success': "Post has been successfully deleted"}, 200
+
 
 # Create a comment
 @app.route('/posts/<int:post_id>/comments', methods=['POST'])
